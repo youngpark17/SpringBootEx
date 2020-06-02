@@ -12,3 +12,6 @@
 
 [스프링부트 restAPI Post](https://github.com/youngpark17/SpringBootEx/commit/4c83a8651e21bc4864e3d9a2a5cc143529e93989)
 참고 링크 https://jetalog.net/96?category=827900
+
+[스프링부트 restAPI Post,Get,Put(Update)](https://github.com/youngpark17/SpringBootEx/commit/b1da7053954536e49e7227f51b788c7b7faad4b9)
+참고 링크 https://jetalog.net/97?category=827900
