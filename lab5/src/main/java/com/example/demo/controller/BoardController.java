@@ -1,10 +1,9 @@
 package com.example.demo.controller;
-
 import com.example.demo.dao.BoardDAO;
 import com.example.demo.dto.BoardDTO;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,17 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @EnableAutoConfiguration
 @MapperScan(basePackages = "com.example.demo.dao")
-public class BoardController {
+public class BoardController{
 
     @Autowired
     private BoardDAO boardDAO;
 
     @RequestMapping(value = "/board", method = RequestMethod.POST)
-    public BoardDTO users(BoardDTO board) throws Exception {
-        boardDAO.newBoard(board);
-        return board;
-    }
+    public ResponseEntity<BoardDTO> postUsers(BoardDTO board) throws Exception {
+        if ((board.getAuthor() == null) || (board.getContents() == null) || (board.getPassword() == null) || (board.getTitle() == null)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
+        boardDAO.newBoard(board);
+        return new ResponseEntity<>(board, HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/board/{seq}", method = RequestMethod.GET)
     public ResponseEntity<BoardDTO> getUsers(@PathVariable("seq") final int seq) throws Exception {
@@ -58,5 +60,20 @@ public class BoardController {
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/board/{seq}", method = RequestMethod.DELETE)
+    public ResponseEntity<BoardDTO> deleteUsers(@PathVariable("seq") final int seq, BoardDTO param) throws Exception {
+        if (param.getPassword() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        param.setSeq(seq); // 조회할 게시물 번호 지정
+        BoardDTO board = boardDAO.getBoard(param);
+        if (board == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        board.setDeleted("Y");
+        boardDAO.editBoard(board);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }
